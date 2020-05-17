@@ -1,51 +1,71 @@
 // a bunch of helper functions for clicking and getting values.
 
+function trigger_button(keyCode) {
+	document.dispatchEvent(new KeyboardEvent("keydown", {which: keyCode, keyCode: keyCode}));
+
+	setTimeout(function() {
+		document.dispatchEvent(new KeyboardEvent("keyup", {which: keyCode, keyCode: keyCode}));
+	}, 0.5)
+}
+
 function pitch_up() {
-	$("#pitch-up-button").click();
+	// $("#pitch-up-button").click();
+	trigger_button(104);
 }
 
 function pitch_down() {
-	$("#pitch-down-button").click();
+	// $("#pitch-down-button").click();
+	trigger_button(101);
 }
 
 function yaw_left() {
-	$("#yaw-left-button").click();
+	// $("#yaw-left-button").click();
+	trigger_button(100);
 }
 
 function yaw_right() {
-	$("#yaw-right-button").click();
+	//$("#yaw-right-button").click();
+	trigger_button(102);
 }
 
 function roll_left() {
-	$("#roll-left-button").click();
+	//$("#roll-left-button").click();
+	trigger_button(103);
 }
 
 function roll_right() {
-	$("#roll-right-button").click();
+	//$("#roll-right-button").click();
+	trigger_button(105);
 }
 
 function translate_left() {
-	$("#translate-left-button").click();
+	//$("#translate-left-button").click();
+	trigger_button(65);
 }
 
 function translate_right() {
-	$("#translate-right-button").click();
+	//$("#translate-right-button").click();
+	trigger_button(68);
 }
 
 function translate_up() {
-	$("#translate-up-button").click();
+	//$("#translate-up-button").click();
+	trigger_button(87);
 }
 
 function translate_down() {
-	$("#translate-down-button").click();
+	//$("#translate-down-button").click();
+	trigger_button(83);
 }
 
 function translate_forward() {
-	$("#translate-forward-button").click();
+	//$("#translate-forward-button").click();
+	trigger_button(69);
 }
 
 function translate_backward() {
-	$("#translate-backward-button").click();
+	//$("#translate-backward-button").click();
+	trigger_button(81);
 }
 
 function getPitchRate() {
@@ -84,10 +104,44 @@ function getRate() {
 	return parseFloat($("#rate > div.rate").innerText);
 }
 
+function randomPos() {
+	// randomizes the current position and velocity
+	rx=(Math.random()-0.5) * 100;ry=(Math.random()-0.5) * 100;rz=(Math.random()-0.5) * 100;
+	rateRotationX=rx;
+	targetRotationX=rx/2*toRAD;
+	rateRotationY=ry;
+	targetRotationY=ry/2*toRAD;
+	rateRotationZ=rz;
+	targetRotationZ=rz/2*toRAD;
+	camera.position.x = (Math.random()-0.5) * 150;
+	camera.position.y = (Math.random()-0.5) * 100;
+	camera.position.x = (Math.random()-0.5) * 100;
+	camera.position.z = (Math.random()-0.5) * 70;
+	motionVector.x = (Math.random()-0.5)*0.1;
+	motionVector.y = (Math.random()-0.5)*0.1;
+	motionVector.z = (Math.random()-0.5)*0.1
+}
+
+var autoEnabled = false;
+
+function toggleAuto() {
+	autoEnabled = ! autoEnabled;
+	$("#auto-toggle").innerText = autoEnabled ? "DISABLE AUTOPILOT":"ENABLE AUTOPILOT";
+}
+
+// quick and dirty control button injection
+document.getElementById("options").insertAdjacentHTML('beforeend', `<div style="position: fixed;left: 50%;margin-left: -215px;top:0px">
+    <div onclick="toggleAuto()" id="auto-toggle" class="message-button" style="display: inline-block;text-align: center;margin: 15px;">ENABLE AUTOPILOT</div>
+    <div onclick="randomPos()" class="message-button" style="display: inline-block;text-align: center;margin: 15px;">RANDOM POSITION</div>
+</div>
+`);
+
+
+
 // The script itself:
 
 var ERROR_TOL = 0.4;
-// PID constants, try changing these. I term wasn't necessary
+// PID constants, try changing these! I term wasn't necessary
 var rotP = 0.51;
 // rotI = 0
 var rotD = 0.8;
@@ -103,8 +157,7 @@ var transXP = 0.08; // proportional. Higher values: more thrust
 var transXD = 1.5; // derivative. Higher values: resists motion/less overshoot
 
 // angular velocity limit
-var maxAngVel = 3;
-
+var maxAngVel = 2.5;
 
 
 // estimated velocity vector
@@ -125,6 +178,10 @@ var velInterval = Math.round(velDt / angleDt);
 setInterval(controlLoop, angleDt * 1000);
 
 function controlLoop() {
+
+	if (!autoEnabled) {
+		return;
+	}
 
 	loopCounter++;
 
@@ -152,8 +209,11 @@ function controlLoop() {
 		yaw_left();
 	}
 
+
 	var rollRate = getRollRate();
 	var roll = getRoll();
+
+	// only correct 
 
 	var rollSetpoint = Math.round((roll * rotP - rollRate * rotD) * 10) / 10;
 
@@ -170,11 +230,11 @@ function controlLoop() {
 	}
 	else {
 		// log rotation rate setpoints
-		console.log({
-			p: pitchSetpoint,
-			y: yawSetpoint,
-			r: rollSetpoint
-		});
+		//console.log({
+		//	p: pitchSetpoint,
+		//	y: yawSetpoint,
+		//	r: rollSetpoint
+		//});
 	}
 }
 
@@ -196,7 +256,7 @@ function translationCorrection() {
 	weirdDutyCycle.y = Math.min(1, Math.max(-1, newPos.y * transP + vel.y * transD));
 	weirdDutyCycle.z = Math.min(1, Math.max(-1, newPos.z * transP + vel.z * transD));
 
-	console.log(weirdDutyCycle);
+	//console.log(weirdDutyCycle);
 
 
 	if (loopCounter % velInterval >= velInterval * Math.abs(weirdDutyCycle.x) || Math.abs(newPos.y) + Math.abs(newPos.z) > 45) {

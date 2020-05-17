@@ -2,53 +2,74 @@
 
 // a bunch of helper functions for clicking and getting values.
 
+function trigger_button(keyCode) {
+	document.dispatchEvent(new KeyboardEvent("keydown", {which: keyCode, keyCode: keyCode}));
+
+	setTimeout(function() {
+		document.dispatchEvent(new KeyboardEvent("keyup", {which: keyCode, keyCode: keyCode}));
+	}, 1)
+}
+
 function pitch_up() {
-	$("#pitch-up-button").click();
+	// $("#pitch-up-button").click();
+	trigger_button(104);
 }
 
 function pitch_down() {
-	$("#pitch-down-button").click()
+	// $("#pitch-down-button").click();
+	trigger_button(101);
 }
 
 function yaw_left() {
-	$("#yaw-left-button").click()
+	// $("#yaw-left-button").click();
+	trigger_button(100);
 }
 
 function yaw_right() {
-	$("#yaw-right-button").click()
+	//$("#yaw-right-button").click();
+	trigger_button(102);
 }
 
 function roll_left() {
-	$("#roll-left-button").click()
+	//$("#roll-left-button").click();
+	trigger_button(103);
 }
 
 function roll_right() {
-	$("#roll-right-button").click()
+	//$("#roll-right-button").click();
+	trigger_button(105);
 }
 
 function translate_left() {
-	$("#translate-left-button").click();
+	//$("#translate-left-button").click();
+	trigger_button(65);
 }
 
 function translate_right() {
-	$("#translate-right-button").click();
+	//$("#translate-right-button").click();
+	trigger_button(68);
 }
 
 function translate_up() {
-	$("#translate-up-button").click();
+	//$("#translate-up-button").click();
+	trigger_button(87);
 }
 
 function translate_down() {
-	$("#translate-down-button").click();
+	//$("#translate-down-button").click();
+	trigger_button(83);
 }
 
 function translate_forward() {
-	$("#translate-forward-button").click();
+	//$("#translate-forward-button").click();
+	trigger_button(69);
 }
 
 function translate_backward() {
-	$("#translate-backward-button").click();
+	//$("#translate-backward-button").click();
+	trigger_button(81);
 }
+
 
 function getPitchRate() {
 	return parseFloat($("#pitch .rate").innerText);
