@@ -107,12 +107,12 @@ function getRate() {
 function randomPos() {
 	// randomizes the current position and velocity
 	rx=(Math.random()-0.5) * 100;ry=(Math.random()-0.5) * 100;rz=(Math.random()-0.5) * 100;
-	rateRotationX=rx;
-	targetRotationX=rx/2*toRAD;
-	rateRotationY=ry;
-	targetRotationY=ry/2*toRAD;
-	rateRotationZ=rz;
-	targetRotationZ=rz/2*toRAD;
+	rateRotationX=Math.round(rx);
+	targetRotationX=Math.round(rx)/2*toRAD;
+	rateRotationY=Math.round(ry);
+	targetRotationY=Math.round(ry)/2*toRAD;
+	rateRotationZ=Math.round(rz);
+	targetRotationZ=Math.round(rz)/2*toRAD;
 	camera.position.x = (Math.random()-0.5) * 150;
 	camera.position.y = (Math.random()-0.5) * 100;
 	camera.position.x = (Math.random()-0.5) * 100;
